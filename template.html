@@ -1,0 +1,30 @@
+<html>
+    <head>
+        <title>Foodpicker</title>
+        <style>
+        *{
+            font-family: 'Courier New', Courier, monospace
+        }
+        .list{
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+        .list li{
+            opacity: .7;
+        }
+        .list li:last-child{
+            opacity: 1;
+            font-weight: bold;
+        }
+        </style>
+    </head>
+    <body style="max-width: 400px;margin: 0 auto">
+        <h1>FOODPICKER4U</h1>
+        <ul class="list">
+            {{range .}}
+            <li>{{.Date}}: {{.Food}}</li>
+            {{end}}
+        </ul>
+    </body>
+</html>

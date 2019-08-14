@@ -9,5 +9,6 @@ RUN CGO_ENABLED=0 go build -ldflags="-s -w" -a -installsuffix nocgo -o foodpicke
 FROM gcr.io/distroless/base
 WORKDIR /root/
 COPY  food.txt .
+COPY  template.html .
 COPY --from=builder /server/foodpicker .
 ENTRYPOINT [ "./foodpicker"]

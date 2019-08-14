@@ -7,10 +7,14 @@ import (
 	"time"
 )
 
-func hasDuplicate(list []string) bool {
-	sort.Strings(list)
+func hasDuplicate(list []Pick) bool {
+	ls := make([]string, len(list))
+	for i := range list {
+		ls[i] = list[i].Food
+	}
+	sort.Strings(ls)
 	for i := 0; i < len(list)-1; i++ {
-		if list[i] == list[i+1] {
+		if ls[i] == ls[i+1] {
 			return true
 		}
 	}

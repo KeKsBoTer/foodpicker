@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strings"
+	"text/template"
 	"time"
 )
 
@@ -20,25 +21,31 @@ func getRandomFood(t time.Time, foods []string, offset int) string {
 }
 
 // isList check if given item is within the given list
-func inList(list []string, item string) bool {
+func inList(list []Pick, item string) bool {
 	for _, s := range list {
-		if s == item {
+		if s.Food == item {
 			return true
 		}
 	}
 	return false
 }
 
-func generateFoodForWeek(date time.Time, foods []string) []string {
+// Pick is a food pick for a date
+type Pick struct {
+	Date string
+	Food string
+}
+
+func generateFoodForWeek(date time.Time, foods []string) []Pick {
 	weekday := int(date.Weekday())
-	picks := make([]string, weekday+1)
+	picks := make([]Pick, weekday+1)
 	for i := range picks {
 		offset := weekday - i
 		date := date.AddDate(0, 0, -offset)
 		for j := 0; ; j++ {
 			p := getRandomFood(date, foods, j)
 			if !inList(picks[:i], p) {
-				picks[i] = p
+				picks[i] = Pick{Date: date.Format("02.01.2006"), Food: p}
 				break
 			}
 		}
@@ -58,10 +65,15 @@ func main() {
 		panic("need at least 7 different entries")
 	}
 
+	tmpl, err := template.ParseFiles("template.html")
+	if err != nil {
+		panic(err)
+	}
+
 	randomFood := func(w http.ResponseWriter, r *http.Request) {
 		dt := time.Now()
 		picks := generateFoodForWeek(dt, restaurants)
-		w.Write([]byte("Today we eat at: " + picks[len(picks)-1]))
+		tmpl.Execute(w, picks)
 	}
 
 	http.HandleFunc("/", randomFood)
