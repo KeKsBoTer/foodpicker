@@ -17,13 +17,18 @@
             opacity: 1;
             font-weight: bold;
         }
+        .list li span{
+            width: 7em;
+            display: inline-block;
+            text-align: right;
+        }
         </style>
     </head>
     <body style="max-width: 400px;margin: 0 auto">
         <h1>FOODPICKER4U</h1>
         <ul class="list">
             {{range .}}
-            <li>{{.Date}}: {{.Food}}</li>
+            <li><span>{{.Date}}:</span> {{.Food}}</li>
             {{end}}
         </ul>
     </body>

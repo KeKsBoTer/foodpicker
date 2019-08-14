@@ -36,6 +36,11 @@ type Pick struct {
 	Food string
 }
 
+func getWeekday(day time.Weekday) string {
+	names := []string{"Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag"}
+	return names[int(day)]
+}
+
 func generateFoodForWeek(date time.Time, foods []string) []Pick {
 	weekday := int(date.Weekday())
 	picks := make([]Pick, weekday+1)
@@ -45,7 +50,7 @@ func generateFoodForWeek(date time.Time, foods []string) []Pick {
 		for j := 0; ; j++ {
 			p := getRandomFood(date, foods, j)
 			if !inList(picks[:i], p) {
-				picks[i] = Pick{Date: date.Format("02.01.2006"), Food: p}
+				picks[i] = Pick{Date: getWeekday(date.Weekday()), Food: p}
 				break
 			}
 		}
@@ -73,6 +78,9 @@ func main() {
 	randomFood := func(w http.ResponseWriter, r *http.Request) {
 		dt := time.Now()
 		picks := generateFoodForWeek(dt, restaurants)
+		if len(picks) > 1 {
+			picks = picks[1:]
+		}
 		tmpl.Execute(w, picks)
 	}
 
