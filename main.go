@@ -8,10 +8,42 @@ import (
 	"time"
 )
 
-func hash(s string) int {
+// getRandomFood returns a arbitrary Food from the list based on the date
+// offset can be seen as a kind of seed
+// in practice the date is hashed and used as index
+func getRandomFood(t time.Time, foods []string, offset int) string {
+	dateString := t.Format("01-02-2006")
 	h := fnv.New32a()
-	h.Write([]byte(s))
-	return int(h.Sum32())
+	h.Write([]byte(dateString))
+	randIndex := (int(h.Sum32()) + offset) % len(foods)
+	return foods[randIndex]
+}
+
+// isList check if given item is within the given list
+func inList(list []string, item string) bool {
+	for _, s := range list {
+		if s == item {
+			return true
+		}
+	}
+	return false
+}
+
+func generateFoodForWeek(date time.Time, foods []string) []string {
+	weekday := int(date.Weekday())
+	picks := make([]string, weekday+1)
+	for i := range picks {
+		offset := weekday - i
+		date := date.AddDate(0, 0, -offset)
+		for j := 0; ; j++ {
+			p := getRandomFood(date, foods, j)
+			if !inList(picks[:i], p) {
+				picks[i] = p
+				break
+			}
+		}
+	}
+	return picks
 }
 
 func main() {
@@ -22,11 +54,14 @@ func main() {
 
 	restaurants := strings.Split(string(b), "\n")
 
+	if len(restaurants) < 7 {
+		panic("need at least 7 different entries")
+	}
+
 	randomFood := func(w http.ResponseWriter, r *http.Request) {
 		dt := time.Now()
-		today := dt.Format("01-02-2006")
-		randIndex := hash(today) % len(restaurants)
-		w.Write([]byte("Today we eat at: " + restaurants[randIndex]))
+		picks := generateFoodForWeek(dt, restaurants)
+		w.Write([]byte("Today we eat at: " + picks[len(picks)-1]))
 	}
 
 	http.HandleFunc("/", randomFood)
