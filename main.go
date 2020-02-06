@@ -1,10 +1,9 @@
 package main
 
 import (
+	"os"
 	"hash/fnv"
-	"io/ioutil"
 	"net/http"
-	"strings"
 	"text/template"
 	"time"
 )
@@ -59,12 +58,11 @@ func generateFoodForWeek(date time.Time, foods []string) []Pick {
 }
 
 func main() {
-	b, err := ioutil.ReadFile("food.txt")
+	apiKey := os.Getenv("MAPS_API_KEY")
+	restaurants, err := getRestaurants(apiKey)
 	if err != nil {
 		panic(err)
 	}
-
-	restaurants := strings.Split(string(b), "\n")
 
 	if len(restaurants) < 7 {
 		panic("need at least 7 different entries")
