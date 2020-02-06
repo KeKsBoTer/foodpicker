@@ -3,8 +3,12 @@ WORKDIR /server/
 
 COPY main.go .
 COPY api.go .
+COPY go.mod .
+COPY go.sum .
 
-RUN CGO_ENABLED=0 go build -ldflags="-s -w" -a -installsuffix nocgo -o foodpicker .
+RUN go mod download
+
+RUN GO111MODULE=auto CGO_ENABLED=0 go build -ldflags="-s -w" -a -installsuffix nocgo -o foodpicker .
 
 
 FROM gcr.io/distroless/base
