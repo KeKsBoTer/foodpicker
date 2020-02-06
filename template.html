@@ -28,7 +28,7 @@
         <h1>FOODPICKER4U</h1>
         <ul class="list">
             {{range .}}
-            <li><span>{{.Date}}:</span> {{.Food}}</li>
+            <li><span>{{.Date}}:</span> <a href="https://www.google.com/maps/search/?api=1&query={{.Location.Lat}},={{.Location.Lng}}&query_place_id={{.PlaceID}}">{{.Name}}</a></li>
             {{end}}
         </ul>
     </body>

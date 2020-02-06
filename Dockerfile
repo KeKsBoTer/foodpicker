@@ -3,6 +3,10 @@ WORKDIR /server/
 
 COPY main.go .
 COPY api.go .
+COPY go.mod .
+COPY go.sum .
+
+RUN go mod install
 
 RUN CGO_ENABLED=0 go build -ldflags="-s -w" -a -installsuffix nocgo -o foodpicker .
 
