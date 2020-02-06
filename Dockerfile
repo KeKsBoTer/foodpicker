@@ -1,14 +1,15 @@
 FROM golang:1.11 as builder
 WORKDIR /server/
 
-COPY main.go .
-COPY api.go .
 COPY go.mod .
 COPY go.sum .
 
-RUN go mod install
+RUN go mod download
 
-RUN CGO_ENABLED=0 go build -ldflags="-s -w" -a -installsuffix nocgo -o foodpicker .
+COPY main.go .
+COPY api.go .
+
+RUN GO111MODULE=auto CGO_ENABLED=0 go build -ldflags="-s -w" -a -installsuffix nocgo -o foodpicker .
 
 
 FROM gcr.io/distroless/base
